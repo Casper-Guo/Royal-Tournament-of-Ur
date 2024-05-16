@@ -1,0 +1,49 @@
+line-length = 96
+indent-width = 4
+include=["royal_game/*.py"]
+exclude=["setup.py"]
+
+[format]
+quote-style = "double"
+indent-style = "space"
+
+[lint]
+select = [
+    # Pyflakes
+    "F",
+    # pycodestyle warnings
+    "W",
+    # pycodestyle errors
+    "E",
+    # isort
+    "I",
+    # pep8-naming
+    "N",
+    # pydocstyle
+    "D1",
+    "D2",
+    "D3",
+    "D400",
+    "D401",
+    "D402",
+    "D403",
+    "D404",
+    # flake8-blind-except
+    "BLE",
+    # flake8-builtins
+    "A",
+    # flake8-logging-format
+    "G",
+    # flake8-raise
+    "RSE",
+    # flake8-return
+    "RET",
+    # flake8-simplify
+    "SIM",
+    # flake8-use-pathlib
+    "PTH",
+    # eradicate
+    "ERA",
+]
+
+ignore = ["D203", "D212", "PTH123"]
