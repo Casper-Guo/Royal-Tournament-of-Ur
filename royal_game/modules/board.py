@@ -43,12 +43,17 @@ class Board:
 
     def __init__(self, seed: int = 122138132480) -> None:
         self.board: dict[str, Grid] = {}
+        white_total = 0
+        black_total = 0
 
         # initialize the white row
         offset = 0
         for name, is_rosette in white_iter():
             status_bit = (seed & (0b1 << offset)) >> offset
             offset += 1
+
+            if status_bit:
+                white_total += 1
 
             # simplified expression since GridStatus(1) indicates white
             self.board[name] = Grid(name, is_rosette, GridStatus(status_bit))
@@ -57,6 +62,10 @@ class Board:
         for name, is_rosette in black_iter():
             status_bit = (seed & (0b1 << offset)) >> offset
             offset += 1
+
+            if status_bit:
+                black_total += 1
+
             self.board[name] = Grid(
                 name, is_rosette, GridStatus(2) if status_bit else GridStatus(0)
             )
@@ -64,6 +73,12 @@ class Board:
         # initialize public row
         for name, is_rosette in public_iter():
             status_bit = (seed & (0b11 << offset)) >> offset
+
+            if status_bit == 1:
+                white_total += 1
+            elif status_bit == 2:
+                black_total += 1
+
             offset += 2
             self.board[name] = Grid(name, is_rosette, GridStatus(status_bit))
 
@@ -73,7 +88,14 @@ class Board:
             offset += 3
             self.board[name] = StartEndGrid(num_pieces, name)
 
-        self.verify_board()
+        white_total += self.board["WS"].num_pieces + self.board["WE"].num_pieces
+        black_total += self.board["BS"].num_pieces + self.board["BE"].num_pieces
+
+        if white_total != 7:
+            raise InvalidNumberofPieces("white", white_total)
+
+        if black_total != 7:
+            raise InvalidNumberofPieces("black", black_total)
 
     def __repr__(self):
         fmt = ""
@@ -113,29 +135,6 @@ class Board:
             offset += 3
 
         return board_int
-
-    def verify_board(self) -> bool:
-        """Check if the board has the correct number of total pieces."""
-        white_total = 0
-        black_total = 0
-
-        for name, _ in chain(white_iter(), public_iter()):
-            if self.board[name].status is GridStatus.white:
-                white_total += 1
-
-        white_total += self.board["WS"].num_pieces + self.board["WE"].num_pieces
-
-        if white_total != 7:
-            raise InvalidNumberofPieces("white", white_total)
-
-        for name, _ in chain(black_iter(), public_iter()):
-            if self.board[name].status is GridStatus.black:
-                black_total += 1
-
-        black_total += self.board["BS"].num_pieces + self.board["BE"].num_pieces
-
-        if black_total != 7:
-            raise InvalidNumberofPieces("black", black_total)
 
     def is_end_state(self):
         """
