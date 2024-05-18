@@ -8,16 +8,29 @@ class Move:
     """Move representation and benchmarking metadata."""
 
     def __init__(
-        self, grid1: str, grid2: str, is_rosette: bool, is_capture: bool, is_ascension: bool
+        self,
+        grid1: str,
+        grid2: str,
+        is_rosette: bool,
+        is_capture: bool,
+        is_ascension: bool,
+        is_onboard: bool,
     ) -> None:
         self.grid1 = grid1
         self.grid2 = grid2
         self.is_rosette = is_rosette
         self.is_capture = is_capture
         self.is_ascension = is_ascension
+        self.is_onboard = is_onboard
 
         try:
             if int(is_rosette) + int(is_capture) + int(is_ascension) > 1:
+                raise ImpossibleMove
+            if self.grid1 == self.grid2:
+                raise ImpossibleMove
+            if (self.grid1[0] == "W" and self.grid2[0] == "B") or (
+                self.grid1[0] == "B" and self.grid2[0] == "W"
+            ):
                 raise ImpossibleMove
         except ImpossibleMove as e:
             print(self)
@@ -36,6 +49,9 @@ class Move:
             f"{capture if self.is_capture else ""}{ascension if self.is_ascension else ""}"
         )
 
+    # It would be a nice QoL improvement to implement a full partial order
+    # so moves can be reasonably sorted
+    # Not urgent due to minimal player interaction and need for nice interface
     def __eq__(self, other: object) -> bool:
         if not isinstance(other, Move):
             return NotImplemented

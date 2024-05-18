@@ -17,9 +17,10 @@ from royal_game._constants import (
     start_end_iter,
     white_iter,
 )
-from royal_game._exceptions import InvalidNumberofPieces
+from royal_game._exceptions import InvalidMove, InvalidNumberofPieces
 from royal_game.modules.grid import Grid, StartEndGrid
 from royal_game.modules.grid_status import GridStatus
+from royal_game.modules.move import Move
 
 
 class Board:
@@ -159,3 +160,20 @@ class Board:
     1, Get available moves on the board, based on the dice roll
     2, Execute a move and modify the board, including validity check
     """
+
+    def get_available_moves(self, white_turn: bool, dice_roll: int) -> tuple[Move]:
+        """Return a tuple of valid moves."""
+        pass
+
+    def make_move(self, move: Move) -> None:
+        """
+        Modify the board based on the board.
+
+        Limited validity check implemented.
+        """
+        if move.is_onboard:
+            if self.board[move.grid2].status != GridStatus.empty:
+                raise InvalidMove
+        else:
+            if self.board[move.grid1].status == self.board[move.grid2].status:
+                raise InvalidMove

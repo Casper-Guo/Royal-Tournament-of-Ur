@@ -11,9 +11,9 @@ class Grid:
     def __init__(
         self, name: str, is_rosette: bool, status: GridStatus = GridStatus.empty
     ) -> None:
+        self.status = status
         self.name = name
         self.is_rosette = is_rosette
-        self.status = status
 
     def __str__(self) -> str:
         symbol = " "

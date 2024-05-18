@@ -39,6 +39,12 @@ class InvalidPlayer(GameError):
 class MoveError(Exception):
     pass
 
+# ImpossibleMove denotes a move that is invalid in any circumstances
+# InvalidMove denotes a move that is invalid on a specific board
 class ImpossibleMove(MoveError):
     def __init__(self) -> None:
-        super().__init__(f"The requested move is impossible.")
+        super().__init__("The requested move is impossible.")
+
+class InvalidMove(MoveError):
+    def __init__(self) -> None:
+        super().__init__("This move is invalid.")
