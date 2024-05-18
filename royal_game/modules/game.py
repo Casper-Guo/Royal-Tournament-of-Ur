@@ -1,8 +1,15 @@
 """Implements game loop."""
 
-from royal_game._exceptions import InvalidPlayer
+import logging
+from random import choices
+from typing import Optional
+
+from royal_game._exceptions import InvalidMove, InvalidPlayer
 from royal_game.modules.board import Board
 from royal_game.modules.player import Player
+
+logging.basicConfig(filename="games.log", filemode="w", format="%(levelname)s: %(message)s")
+logger = logging.getLogger(__name__)
 
 
 class Game:
@@ -13,7 +20,7 @@ class Game:
     implements select_move.
     """
 
-    def __init__(self, player1: Player, player2: Player):
+    def __init__(self, player1: Player, player2: Player, board: Optional[Board] = None):
         if "select_move" not in dir(player1):
             raise InvalidPlayer(player1)
 
@@ -22,18 +29,50 @@ class Game:
 
         self.player1 = player1
         self.player2 = player2
-        self.board = Board()
+
+        if board is None:
+            self.board = Board()
+        else:
+            self.board = board
         self.white_turn = True
 
-    def play(self) -> None:
-        """
-        Implement the game loop.
+    def play(self) -> bool:
+        """Return true if white wins, and vice versa."""
+        logger.info("%s is white.\n%s is black.", self.player1, self.player2)
 
-        1, roll dices. If 0, skip to 5
-        2, send available moves to player
-        3, player returns selected move
-        4, update board
-        5, determine who has the next turn
-        """
         while not self.board.is_end_state():
-            pass
+            current_player = self.player1 if self.white_turn else self.player2
+            dice_roll = choices(
+                [0, 1, 2, 3, 4], weights=[1 / 16, 1 / 4, 3 / 8, 1 / 4, 1 / 16], k=1
+            )
+
+            if dice_roll == 0:
+                logger.info(
+                    "%s rolled a zero. The turn is automatically passed", current_player
+                )
+                self.white_turn = not self.white_turn
+                continue
+            logger.info("%s rolled a %d.", current_player, dice_roll)
+
+            available_moves = self.board.get_available_moves(self.white_turn, dice_roll)
+            move_selected = current_player.select_move(self.board, available_moves)
+
+            try:
+                self.board.make_move(move_selected)
+                logger.info(move_selected)
+                logger.info("%s", self.board)
+            except InvalidMove as e:
+                logger.critical(move_selected)
+                raise e
+
+            if not move_selected.is_rosette:
+                self.white_turn = not self.white_turn
+
+        # no other return statement needed since it is guaranteed that
+        # one of the following two conditions is True
+        if self.board.board["WE"].num_pieces == 7:
+            logger.info("%s wins!", self.player1)
+            return True
+        if self.board.board["BE"].num_pieces == 7:  # noqa: RET503
+            logger.info("%s wins!", self.player2)
+            return False

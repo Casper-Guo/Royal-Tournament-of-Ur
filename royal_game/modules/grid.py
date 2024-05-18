@@ -11,9 +11,9 @@ class Grid:
     def __init__(
         self, name: str, is_rosette: bool, status: GridStatus = GridStatus.empty
     ) -> None:
+        self.status = status
         self.name = name
         self.is_rosette = is_rosette
-        self.status = status
 
     def __str__(self) -> str:
         symbol = " "
@@ -26,7 +26,7 @@ class Grid:
         return f"---\n|{symbol}|\n---\n"
 
     def __repr__(self) -> str:
-        return f"{self.__name__}({self.name}, {self.is_rosette}, {self.status})"
+        return f"Grid({self.name}, {self.is_rosette}, {self.status})"
 
     def __int__(self) -> int:
         return self.status.value
@@ -45,7 +45,7 @@ class StartEndGrid(Grid):
         return f"   \n {self.num_pieces} \n   \n"
 
     def __repr__(self) -> str:
-        return f"{self.__name__}({self.num_pieces}, {self.name})"
+        return f"StartEndGrid({self.num_pieces}, {self.name})"
 
     def __int__(self) -> int:
         return self.num_pieces

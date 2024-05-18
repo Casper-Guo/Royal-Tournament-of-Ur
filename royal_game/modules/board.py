@@ -20,6 +20,7 @@ from royal_game._constants import (
 from royal_game._exceptions import InvalidNumberofPieces
 from royal_game.modules.grid import Grid, StartEndGrid
 from royal_game.modules.grid_status import GridStatus
+from royal_game.modules.move import Move
 
 
 class Board:
@@ -41,7 +42,7 @@ class Board:
     122138132480 = (7 << 28) + (7 << 34)
     """
 
-    def __init__(self, seed: int = 122138132480) -> None:
+    def __init__(self, seed: int = 122138132480, no_verify: bool = False) -> None:
         self.board: dict[str, Grid] = {}
         white_total = 0
         black_total = 0
@@ -88,14 +89,15 @@ class Board:
             offset += 3
             self.board[name] = StartEndGrid(num_pieces, name)
 
-        white_total += self.board["WS"].num_pieces + self.board["WE"].num_pieces
-        black_total += self.board["BS"].num_pieces + self.board["BE"].num_pieces
+        if not no_verify:
+            white_total += self.board["WS"].num_pieces + self.board["WE"].num_pieces
+            black_total += self.board["BS"].num_pieces + self.board["BE"].num_pieces
 
-        if white_total != 7:
-            raise InvalidNumberofPieces("white", white_total)
+            if white_total != 7:
+                raise InvalidNumberofPieces("white", white_total)
 
-        if black_total != 7:
-            raise InvalidNumberofPieces("black", black_total)
+            if black_total != 7:
+                raise InvalidNumberofPieces("black", black_total)
 
     def __repr__(self):
         fmt = ""
@@ -119,12 +121,17 @@ class Board:
         return fmt
 
     def __int__(self) -> int:
-        """Recalculate the integer representation since the board may be modified."""
+        """
+        Recalculate the integer representation since the board may be modified.
+
+        Grid objects are converted to integers based on the value of their status.
+        This is the desired behavior for the public grids but not the private grids.
+        """
         board_int = 0
         offset = 0
 
         for name, _ in chain(white_iter(), black_iter()):
-            board_int += (int(self.board[name])) << offset
+            board_int += int(self.board[name].status != GridStatus.empty) << offset
             offset += 1
 
         for name, _ in public_iter():
@@ -154,8 +161,29 @@ class Board:
         """
         return self.board["BE"].num_pieces == 7 or self.board["WE"].num_pieces == 7
 
-    """
-    Logic to be implemented:
-    1, Get available moves on the board, based on the dice roll
-    2, Execute a move and modify the board, including validity check
-    """
+    def get_available_moves(self, white_turn: bool, dice_roll: int) -> tuple[Move]:
+        """Return a tuple of valid moves."""
+        pass
+
+    def make_move(self, move: Move) -> None:
+        """Modify the board based on the board."""
+        if move.is_onboard:
+            self.board[move.grid1].num_pieces -= 1
+            if move.grid1 == "WS":
+                self.board[move.grid2].status = GridStatus.white
+            elif move.grid1 == "BS":
+                self.board[move.grid2].status = GridStatus.black
+        elif move.is_capture:
+            if self.board[move.grid2].status == GridStatus.white:
+                self.board["WS"].num_pieces += 1
+            if self.board[move.grid2].status == GridStatus.black:
+                self.board["BS"].num_pieces += 1
+
+            self.board[move.grid2].status = self.board[move.grid1].status
+            self.board[move.grid1].status = GridStatus.empty
+        elif move.is_ascension:
+            self.board[move.grid1].status = GridStatus.empty
+            self.board[move.grid2].num_pieces += 1
+        else:
+            self.board[move.grid2].status = self.board[move.grid1].status
+            self.board[move.grid1].status = GridStatus.empty
