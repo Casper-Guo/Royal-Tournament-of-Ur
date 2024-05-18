@@ -1,5 +1,10 @@
 """Implements player interface."""
 
+from typing import Iterable
+
+from royal_game.modules.board import Board
+from royal_game.modules.move import Move
+
 
 class Player:
     """Player evaluates board state and selects from available actions."""
@@ -9,3 +14,7 @@ class Player:
 
     def __repr__(self) -> str:
         return self.name
+
+    def select_move(self, board: Board, available_moves: Iterable[Move]) -> Move:
+        """All subclasses must implement this method."""
+        pass

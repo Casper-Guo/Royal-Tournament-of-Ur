@@ -119,6 +119,7 @@ class Board:
         return fmt
 
     def __int__(self) -> int:
+        """Recalculate the integer representation since the board may be modified."""
         board_int = 0
         offset = 0
 
@@ -136,6 +137,14 @@ class Board:
 
         return board_int
 
+    def __eq__(self, other: object) -> bool:
+        if not isinstance(other, Board):
+            return NotImplemented
+        return self.__int__() == other.__int__()
+
+    def __hash__(self) -> int:
+        return self.__int__()
+
     def is_end_state(self):
         """
         Check if the board is at an end state.
@@ -144,3 +153,9 @@ class Board:
         all 7 pieces to the end grid.
         """
         return self.board["BE"].num_pieces == 7 or self.board["WE"].num_pieces == 7
+
+    """
+    Logic to be implemented:
+    1, Get available moves on the board, based on the dice roll
+    2, Execute a move and modify the board, including validity check
+    """

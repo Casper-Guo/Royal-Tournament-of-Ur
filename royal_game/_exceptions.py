@@ -1,7 +1,5 @@
 """Custom exception types."""
 
-from royal_game.modules.player import Player
-
 class GridError(Exception):
     pass
 
@@ -28,7 +26,13 @@ class GameError(Exception):
     pass
 
 class InvalidPlayer(GameError):
-    def __init__(self, player: Player) -> None:
+    def __init__(self, player) -> None:
+        """
+        player is a Player class object.
+        
+        Annotating this type is impossible due to circular imports.
+        """
+
         message = f"Player {player.name} has not implemented select_move."
         super().__init__(message)
 

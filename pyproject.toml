@@ -15,7 +15,12 @@ build-backend = "setuptools.build_meta"
 [tool.ruff]
 line-length = 96
 indent-width = 4
-exclude = ["royal_game/_exceptions.py", "royal_game/__init__.py", "royal_game/tests/*.py"]
+exclude = [
+    "royal_game/_exceptions.py",
+    "royal_game/__init__.py",
+    "royal_game/tests/*.py",
+    "royal_game/players/*.py"
+]
 
 [tool.ruff.format]
 quote-style = "double"

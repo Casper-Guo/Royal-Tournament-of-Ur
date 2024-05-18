@@ -23,12 +23,17 @@ class Game:
         self.player1 = player1
         self.player2 = player2
         self.board = Board()
+        self.white_turn = True
 
-    """
-    Game loop basic design:
-    1, roll dices. If 0, skip to 5
-    2, send available moves to player
-    3, player returns selected move
-    4, update board
-    5, determine who has the next turn
-    """
+    def play(self) -> None:
+        """
+        Implement the game loop.
+
+        1, roll dices. If 0, skip to 5
+        2, send available moves to player
+        3, player returns selected move
+        4, update board
+        5, determine who has the next turn
+        """
+        while not self.board.is_end_state():
+            pass

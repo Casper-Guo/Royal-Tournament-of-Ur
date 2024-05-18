@@ -25,10 +25,11 @@ def test_init():
     assert board.board["B14"].status == GridStatus.empty
     assert int(board.board["WS"]) == 2
     assert int(board.board["BE"]) == 1
+    assert int(board) == 174518804524
 
 
 def test_check_endstate():
     assert Board(966988398624).is_end_state()
-    assert not Board(829549445216).is_end_state()
     assert Board(599282155520).is_end_state()
+    assert not Board(829549445216).is_end_state()
     assert not Board(597403107328).is_end_state()
