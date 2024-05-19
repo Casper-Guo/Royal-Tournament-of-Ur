@@ -1,5 +1,6 @@
-"""An example player implementation that also serves as a dummy for testing."""
+"""A player that selects its moves randomly."""
 
+from random import randint
 from typing import Iterable
 
 from royal_game.modules.board import Board
@@ -7,12 +8,12 @@ from royal_game.modules.move import Move
 from royal_game.modules.player import Player
 
 
-class Dummy(Player):
+class Rng(Player):
     """You must implement the select_move method!"""  # noqa: D400
 
     def __init__(self):
         """Choose a name for your player."""
-        name = "{Dummy}"
+        name = "Random player"
         super().__init__(name)
 
     def select_move(self, board: Board, available_moves: Iterable[Move]) -> Move:
@@ -28,4 +29,4 @@ class Dummy(Player):
 
         The dummy always return the first available move.
         """
-        return available_moves[0]
+        return available_moves[randint(0, len(available_moves) - 1)]
