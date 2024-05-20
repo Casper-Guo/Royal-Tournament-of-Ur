@@ -15,6 +15,8 @@ class Player:
     def __repr__(self) -> str:
         return self.name
 
-    def select_move(self, board: Board, available_moves: Iterable[Move]) -> Move:
+    def select_move(
+        self, board: Board, available_moves: Iterable[Move], white_turn: bool
+    ) -> Move:
         """All subclasses must implement this method."""
         pass
