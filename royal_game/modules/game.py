@@ -4,11 +4,13 @@ import logging
 from random import choices
 from typing import Optional
 
-from royal_game._exceptions import InvalidMove, InvalidPlayer
+from royal_game._exceptions import InvalidPlayer
 from royal_game.modules.board import Board
 from royal_game.modules.player import Player
 
-logging.basicConfig(filename="games.log", filemode="w", format="%(levelname)s: %(message)s")
+logging.basicConfig(
+    filename="games.log", filemode="w", level=logging.INFO, format="%(levelname)s: %(message)s"
+)
 logger = logging.getLogger(__name__)
 
 
@@ -36,6 +38,13 @@ class Game:
             self.board = board
         self.white_turn = True
 
+    def __repr__(self):
+        return (
+            f"{self.player1} vs {self.player2}\n"
+            f"It's {self.player1 if self.white_turn else self.player_2}'s turn.\n"
+            f"{self.board}"
+        )
+
     def play(self) -> bool:
         """Return true if white wins, and vice versa."""
         logger.info("%s is white.\n%s is black.", self.player1, self.player2)
@@ -44,7 +53,7 @@ class Game:
             current_player = self.player1 if self.white_turn else self.player2
             dice_roll = choices(
                 [0, 1, 2, 3, 4], weights=[1 / 16, 1 / 4, 3 / 8, 1 / 4, 1 / 16], k=1
-            )
+            )[0]
 
             if dice_roll == 0:
                 logger.info(
@@ -55,15 +64,20 @@ class Game:
             logger.info("%s rolled a %d.", current_player, dice_roll)
 
             available_moves = self.board.get_available_moves(self.white_turn, dice_roll)
+
+            if not available_moves:
+                logger.info(
+                    "%s has no available moves. The turn is automatically passed",
+                    current_player,
+                )
+                self.white_turn = not self.white_turn
+                continue
+
             move_selected = current_player.select_move(self.board, available_moves)
 
-            try:
-                self.board.make_move(move_selected)
-                logger.info(move_selected)
-                logger.info("%s", self.board)
-            except InvalidMove as e:
-                logger.critical(move_selected)
-                raise e
+            self.board.make_move(move_selected)
+            logger.info("%s %s", current_player, move_selected)
+            logger.info("\n%s", self.board)
 
             if not move_selected.is_rosette:
                 self.white_turn = not self.white_turn

@@ -35,7 +35,7 @@ class Grid:
 class StartEndGrid(Grid):
     """Starting grid."""
 
-    def __init__(self, num_pieces: int, name: str) -> None:
+    def __init__(self, name: str, num_pieces: int = 7) -> None:
         super().__init__(name, is_rosette=False)
         if num_pieces < 0 or num_pieces > 7:
             raise InvalidNumPieces(num_pieces)

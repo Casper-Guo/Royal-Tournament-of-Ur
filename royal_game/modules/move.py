@@ -30,11 +30,16 @@ class Move:
             self.verify_move()
 
     def __str__(self) -> str:
-        return (
-            f"Move the piece on {self.grid1} to {self.grid2} "
-            f"{rosette if self.is_rosette else ''}{capture if self.is_capture else ''}"
-            f"{ascension if self.is_ascension else ''}"
-        )
+        base = f"Moved from {self.grid1} to {self.grid2}."
+        if self.is_rosette:
+            return base + f" Claimed a rosette! {rosette}"
+        if self.is_capture:
+            return base + f" Captured a piece! {capture}"
+        if self.is_ascension:
+            return f"Ascended a piece from {self.grid1}! {ascension}"
+        if self.is_onboard:
+            return f"Moved a piece onto the board at {self.grid2}."
+        return base
 
     def __repr__(self) -> str:
         return (
@@ -42,13 +47,16 @@ class Move:
             f"{capture if self.is_capture else ''}{ascension if self.is_ascension else ''}"
         )
 
-    # It would be a nice QoL improvement to implement a full partial order
+    # It would be a nice QoL improvement to implement a partial ordering
     # so moves can be reasonably sorted
     # Not urgent due to minimal player interaction and need for nice interface
     def __eq__(self, other: object) -> bool:
         if not isinstance(other, Move):
             return NotImplemented
         return self.grid1 == other.grid1 and self.grid2 == other.grid2
+
+    def __hash__(self) -> int:
+        return hash((self.grid1, self.grid2))
 
     def verify_move(self) -> None:
         """Check move validity."""

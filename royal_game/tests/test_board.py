@@ -19,18 +19,18 @@ def test_reject_invalid_board():
 
 def test_init():
     board = Board(174518804524)
-    assert board.board["W4"].status == GridStatus.white
-    assert board.board["8"].status == GridStatus.empty
-    assert board.board["B14"].status == GridStatus.empty
+    assert board.board["W4"].status is GridStatus.white
+    assert board.board["8"].status is GridStatus.empty
+    assert board.board["B14"].status is GridStatus.empty
     assert int(board.board["WS"]) == 2
     assert int(board.board["BE"]) == 1
     assert int(board) == 174518804524
 
     board = Board(104689829892)
-    assert board.board["W3"].status == GridStatus.white
-    assert board.board["B4"].status == GridStatus.empty
-    assert board.board["W14"].status == GridStatus.empty
-    assert board.board["B14"].status == GridStatus.black
+    assert board.board["W3"].status is GridStatus.white
+    assert board.board["B4"].status is GridStatus.empty
+    assert board.board["W14"].status is GridStatus.empty
+    assert board.board["B14"].status is GridStatus.black
     assert int(board.board["BS"]) == 6
     assert int(board) == 104689829892
 
@@ -40,28 +40,35 @@ def test_check_end_state():
     assert Board(599282155520).is_end_state()
     assert not Board(829549445216).is_end_state()
     assert not Board(597403107328).is_end_state()
-    
+
+
 def test_get_available_moves():
     board = Board(86973360148)
-    black_4_expected = set((
-        Move("BS", "B4", is_rosette=True, is_onboard=True),
-        Move("5", "9")
-    ))
+    black_4_expected = set((Move("BS", "B4", is_rosette=True, is_onboard=True), Move("5", "9")))
     assert black_4_expected == set(board.get_available_moves(False, 4))
-    white_2_expected = set((
-        Move("WS", "W2", is_onboard=True),
-        Move("W3", "5", is_capture=True),
-        Move("8", "10"),
-        Move("W13", "WE", is_ascension=True)
-    ))
+    white_2_expected = set(
+        (
+            Move("WS", "W2", is_onboard=True),
+            Move("W3", "5", is_capture=True),
+            Move("8", "10"),
+            Move("W13", "WE", is_ascension=True),
+        )
+    )
     assert white_2_expected == set(board.get_available_moves(True, 2))
-    
+
     board = Board(88852430985)
-    black_2_expected = set((
-        Move("B2", "B4", is_rosette=True),
-        Move("6", "9")
-    ))
+    black_2_expected = set((Move("B2", "B4", is_rosette=True), Move("6", "9")))
     assert black_2_expected == set(board.get_available_moves(False, 2))
+
+    # no piece remaining off the board special case
+    board = Board(837518624784)
+    assert set([Move("W13", "WE", is_ascension=True)]) == set(
+        board.get_available_moves(True, 2)
+    )
+    assert set([Move("B14", "BE", is_ascension=True)]) == set(
+        board.get_available_moves(False, 1)
+    )
+
 
 def test_move():
     board = Board()
