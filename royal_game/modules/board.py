@@ -136,7 +136,7 @@ class Board:
         offset = 0
 
         for name, _ in chain(white_grid_iter(), black_grid_iter()):
-            board_int += int(self.board[name].status != GridStatus.empty) << offset
+            board_int += int(self.board[name].status is not GridStatus.empty) << offset
             offset += 1
 
         for name, _ in public_grid_iter():
