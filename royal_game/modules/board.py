@@ -41,7 +41,8 @@ class Board:
     bit 28-39: three bit each for WS, WE, BS, BE
     indicating number of pieces at start/end
 
-    122138132480 = (7 << 28) + (7 << 34)
+    122138132480 = (7 << 28) + (7 << 34) represents
+    the empty starting board.
     """
 
     white_rosettes = set(["W4", "8", "W14"])
@@ -191,7 +192,14 @@ class Board:
             and self.board[start_grid].num_pieces > 0
         ):
             available_moves.append(
-                Move(start_grid, grids[dice_roll - 1], is_onboard=True, no_verify=True)
+                Move(
+                    start_grid,
+                    grids[dice_roll - 1],
+                    # if the roll is 4 then the onboard move also claims a rosette
+                    is_rosette=dice_roll == 4,
+                    is_onboard=True,
+                    no_verify=True,
+                )
             )
         if self.board[grids[-dice_roll]].status is own_status:
             available_moves.append(

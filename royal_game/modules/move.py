@@ -53,7 +53,21 @@ class Move:
     def __eq__(self, other: object) -> bool:
         if not isinstance(other, Move):
             return NotImplemented
-        return self.grid1 == other.grid1 and self.grid2 == other.grid2
+        return (
+            self.grid1,
+            self.grid2,
+            self.is_rosette,
+            self.is_capture,
+            self.is_ascension,
+            self.is_onboard,
+        ) == (
+            other.grid1,
+            other.grid2,
+            other.is_rosette,
+            other.is_capture,
+            other.is_ascension,
+            other.is_onboard,
+        )
 
     def __hash__(self) -> int:
         return hash((self.grid1, self.grid2))
