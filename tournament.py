@@ -8,7 +8,7 @@ against each other pairwise.
 import logging
 import random
 from collections import defaultdict
-from itertools import combinations
+from itertools import combinations, combinations_with_replacement
 from pathlib import Path
 from typing import Iterable
 
@@ -25,7 +25,7 @@ def filename_to_class_name(filename: str) -> str:
     return "".join([word.capitalize() for word in filename.split("_")])
 
 
-def output_results(num_wins: defaultdict, num_games: int) -> None:
+def output_results(num_wins: defaultdict, num_games: int, self_play: bool) -> None:
     """Format tournament results nicely."""
     print(f"{'TOURNAMENT RESULTS':_^120}")
     player_names = list(num_wins.keys())
@@ -38,7 +38,7 @@ def output_results(num_wins: defaultdict, num_games: int) -> None:
         # for a scoring matrix look
         table_row = f"{name1:^20}"
         for name2 in player_names:
-            if name1 == name2:
+            if name1 == name2 and not self_play:
                 table_row += f"{'\\':^20}"
             else:
                 win_percentage = f"{num_wins[name1][name2]}/{num_games}"
@@ -56,7 +56,7 @@ def output_results(num_wins: defaultdict, num_games: int) -> None:
     help="Number of games to simulate between each pair of players.",
 )
 @click.option(
-    "-b",
+    "-s",
     "--board-seed",
     default=122138132480,
     type=int,
@@ -65,6 +65,7 @@ def output_results(num_wins: defaultdict, num_games: int) -> None:
         "Board representation layout is documented in royal_game.modules.board."
     ),
 )
+@click.option("-b", "--binary-seed", is_flag=True, help="Interpret the seed argument as binary")
 @click.option(
     "-r",
     "--random-seed",
@@ -72,6 +73,7 @@ def output_results(num_wins: defaultdict, num_games: int) -> None:
     type=int,
     help="Optionally set a random seed for reproducibility.",
 )
+@click.option("-p", "--self-play", is_flag=True)
 @click.option(
     "-f",
     "--full-output",
@@ -82,12 +84,16 @@ def main(
     players: Iterable[click.Path],
     num_games: int,
     board_seed: int,
+    binary_seed: bool,
     random_seed: int,
+    self_play: bool,
     full_output: bool,
 ):
     """Implement tournament runner."""
     if not full_output:
         logging.getLogger("royal_game.modules.game").setLevel(logging.INFO)
+    if binary_seed:
+        board_seed = int(str(board_seed), 2)
     if random_seed is not None:
         random.seed(random_seed)
 
@@ -108,7 +114,12 @@ def main(
             )
 
     num_wins = defaultdict(lambda: defaultdict(int))
-    for player1, player2 in combinations(player_classes, 2):
+    iterator = (
+        combinations(player_classes, 2)
+        if not self_play
+        else combinations_with_replacement(player_classes, 2)
+    )
+    for player1, player2 in iterator:
         for _ in range(num_games):
             game = Game(player1(), player2(), board_seed)
             if game.play():
@@ -117,7 +128,7 @@ def main(
             else:
                 num_wins[str(game.player2)][str(game.player1)] += 1
 
-    output_results(num_wins, num_games)
+    output_results(num_wins, num_games, self_play)
 
 
 if __name__ == "__main__":
