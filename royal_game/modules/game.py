@@ -22,7 +22,9 @@ class Game:
     implements select_move.
     """
 
-    def __init__(self, player1: Player, player2: Player, board: Optional[Board] = None):
+    def __init__(
+        self, player1: Player, player2: Player, board_seed: Optional[int] = 122138132480
+    ):
         if "select_move" not in dir(player1):
             raise InvalidPlayer(player1)
 
@@ -31,11 +33,7 @@ class Game:
 
         self.player1 = player1
         self.player2 = player2
-
-        if board is None:
-            self.board = Board()
-        else:
-            self.board = board
+        self.board = Board(seed=board_seed)
         self.white_turn = True
 
     def __repr__(self):

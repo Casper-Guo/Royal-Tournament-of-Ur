@@ -1,4 +1,9 @@
-"""An example player implementation that also serves as a dummy for testing."""
+"""
+An example player implementation that also serves as a dummy for testing.
+
+Your player class name should be camel case with the first letter capitalized.
+Your file name should be the same as the class name except in snake case.
+"""
 
 from typing import Iterable
 
@@ -12,7 +17,7 @@ class Dummy(Player):
 
     def __init__(self):
         """Choose a name for your player."""
-        name = "{Dummy}"
+        name = "Dummy"
         super().__init__(name)
 
     def select_move(
