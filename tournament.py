@@ -39,7 +39,7 @@ def output_results(num_wins: defaultdict, num_games: int, self_play: bool) -> No
         table_row = f"{name1:^20}"
         for name2 in player_names:
             if name1 == name2 and not self_play:
-                table_row += f"{'\\':^20}"
+                table_row += f"{'/':^20}"
             else:
                 win_percentage = f"{num_wins[name1][name2]}/{num_games}"
                 table_row += f"{win_percentage:^20}"
@@ -126,7 +126,10 @@ def main(
                 # player1 wins
                 num_wins[str(game.player1)][str(game.player2)] += 1
             else:
-                num_wins[str(game.player2)][str(game.player1)] += 1
+                if player1 != player2:
+                    # only log white wins in self-play
+                    # black wins are implied
+                    num_wins[str(game.player2)][str(game.player1)] += 1
 
     output_results(num_wins, num_games, self_play)
 
