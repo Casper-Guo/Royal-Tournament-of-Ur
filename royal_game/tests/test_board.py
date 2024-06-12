@@ -69,6 +69,12 @@ def test_get_available_moves():
         board.get_available_moves(False, 1)
     )
 
+    # end game boards
+    board = Board(966988398624)
+    assert board.get_available_moves(True, 1) == ()
+    board = Board(599282155520)
+    assert board.get_available_moves(False, 4) == ()
+
 
 def test_move():
     board = Board()

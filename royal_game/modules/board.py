@@ -172,8 +172,13 @@ class Board:
         Return a tuple of valid moves.
 
         Requires dice_roll to be non-negative.
+
+        End states are defined as having no available moves.
         """
         assert dice_roll > 0
+        if self.is_end_state():
+            return ()
+
         own_status = GridStatus.white if white_turn else GridStatus.black
         other_status = GridStatus.black if white_turn else GridStatus.white
         start_grid = "WS" if white_turn else "BS"
