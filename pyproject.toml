@@ -2,7 +2,7 @@
 version = "0.1.0"
 name = "royal_game"
 authors = [
-    {email = "casperg@umich.edu", name = "casperg@umich.edu"},
+    {email = "casperg@umich.edu", name = "Casper Guo"},
 ]
 description = "Royal Game of Ur Simulator"
 readme = "README.md"
