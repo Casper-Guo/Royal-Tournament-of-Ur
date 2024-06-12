@@ -46,6 +46,7 @@ class Game:
     def play(self) -> bool:
         """Return true if white wins, and vice versa."""
         logger.debug("%s is white.\n%s is black.", self.player1, self.player2)
+        logger.debug("\n%s", self.board)
 
         while not self.board.is_end_state():
             current_player = self.player1 if self.white_turn else self.player2
