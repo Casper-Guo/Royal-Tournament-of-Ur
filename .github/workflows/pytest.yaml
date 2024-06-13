@@ -22,4 +22,6 @@ jobs:
         python3 -m pip install pytest
         python3 -m pip install -e .
     - name: Run tests with pytest
-      run: pytest ./royal_game/tests/
+      run: |
+        pytest ./royal_game/tests/
+        pytest ./test_translate.py
