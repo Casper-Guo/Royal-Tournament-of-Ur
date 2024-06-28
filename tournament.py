@@ -81,7 +81,7 @@ def output_results(num_wins: defaultdict, num_games: int, self_play: bool) -> No
     help="Enable saving full debug output to games.log in addition to summary statistics",
 )
 def main(
-    players: Iterable[click.Path],
+    players: Iterable[Path],
     num_games: int,
     board_seed: int,
     binary_seed: bool,
