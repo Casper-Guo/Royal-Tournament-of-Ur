@@ -1,11 +1,24 @@
-"""Translate Rust board seed to Python board seed."""
+"""
+Translate Rust board seed to Python board seed.
+
+Note the following assumption is not valid:
+
+    python_to_rust(rust_to_python(rust_seed)) == rust_seed
+
+This property is only guaranteed for the first 62 bits.
+
+However, this assumption is valid:
+
+    rust_to_python(python_to_rust(py_seed)) == py_seed
+"""
 
 import logging
-import click
 from pathlib import Path
 
+import click
+
+from royal_game._constants import black_order_iter, white_order_iter
 from royal_game._exceptions import BoardError
-from royal_game._constants import white_order_iter, black_order_iter
 from royal_game.modules.board import Board
 
 logging.basicConfig(format="%(levelname)s: %(message)s")
@@ -121,8 +134,30 @@ def python_to_rust(py_seed: int, verify: bool = True) -> int:
 
     return rust_seed
 
-def main():
-    pass
+
+@click.command()
+@click.option("--python-seeds/--rust-seeds", "-p/-r", required=True)
+@click.option("--binary-output", "-b", is_flag=True, default=False)
+@click.option("--verify/--no-verify", default=True)
+@click.argument("in_file", type=click.Path(exists=True, path_type=Path))
+@click.argument("out_file", type=click.Path(path_type=Path))
+def main(python_seeds: bool, binary_output: bool, verify: bool, in_file: Path, out_file: Path):
+    """
+    Implement batch translation of seeds.
+
+    Input file should contain seeds in decimal encoding with one on each line.
+    """
+    translator = python_to_rust if python_seeds else rust_to_python
+
+    with open(in_file, mode="r") as fin, open(out_file, mode="w+") as fout:
+        for line in fin:
+            seed = int(line.strip())
+            translated = translator(seed, verify=verify)
+
+            if binary_output:
+                translated = f"{translated:0>64b}" if python_seeds else f"{translated:0>40b}"
+
+            fout.write(f"{translated}\n")
 
 
 if __name__ == "__main__":
