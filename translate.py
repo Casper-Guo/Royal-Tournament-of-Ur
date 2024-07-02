@@ -42,6 +42,11 @@ def rust_to_python(rust_seed: int, verify: bool = True) -> int:
         10: black win
         11: in progress
     """
+    if verify:
+        assert (rust_seed & (0xFFFF << 8)) >> 8 == (
+            rust_seed & (0xFFFF << 36)
+        ) >> 36, f"{rust_seed}"
+
     py_seed = 0
     white_total, black_total = 0, 0
 
