@@ -156,7 +156,7 @@ def main(python_seeds: bool, binary_output: bool, verify: bool, in_file: Path, o
 
     with open(in_file, mode="r") as fin, open(out_file, mode="w+") as fout:
         for line in fin:
-            seed = int(line.strip())
+            seed = int("".join(filter(str.isdigit, line.strip())))
             translated = translator(seed, verify=verify)
 
             if binary_output:
