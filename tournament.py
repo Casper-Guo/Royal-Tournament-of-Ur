@@ -120,10 +120,14 @@ def main(
         else combinations_with_replacement(player_classes, 2)
     )
     for player1, player2 in iterator:
-        for _ in range(num_games):
-            game = Game(player1(), player2(), board_seed)
+        for i in range(num_games):
+            white_player, black_player = player1, player2
+            if i >= num_games // 2:
+                white_player, black_player = player2, player1
+
+            game = Game(white_player(), black_player(), board_seed)
             if game.play():
-                # player1 wins
+                # white wins
                 num_wins[str(game.player1)][str(game.player2)] += 1
             else:
                 if player1 != player2:
